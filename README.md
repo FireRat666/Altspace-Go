@@ -24,37 +24,43 @@ To add the Go board to your Banter space, include the `Go.js` script in your `in
 <script src="https://banter-go.firer.at/Go.js"></script>
 ```
 
-### Configuration via URL Parameters
+### Configuration
 
-You can configure the board's position, size, and behavior by appending parameters to the script URL.
+You can configure the board's appearance and behavior using **HTML script attributes** (recommended) or legacy **URL query parameters** (for backwards compatibility).
 
-| Parameter | Description | Default | Example |
+| Parameter / Attribute | Description | Default | Example (Attribute) |
 | :--- | :--- | :--- | :--- |
-| `instance` | Unique ID for this game instance. Use this to have multiple separate games in one space. | `URL path` | `instance=table1` |
-| `boardSize` | Grid size (e.g., 19, 13, 9). | `19` | `boardSize=9` |
-| `hideUI` | Makes the UI (buttons, scoreboard) invisible but still functional. | `false` | `hideUI=true` |
-| `hideBoard` | Hides the board geometry. | `false` | `hideBoard=true` |
-| `useCustomModels` | Use GLB models for pieces. | `false` | `useCustomModels=true` |
-| `lighting` | Shader type: 'lit' or 'unlit'. | `unlit` | `lighting=lit` |
-| `addLights` | Add directional light for lit mode. | `true` | `addLights=false` |
-| `useAOBaking` | Bake Ambient Occlusion on board geometry. | `false` | `useAOBaking=true` |
-| `boardPosition` | Position of the game board (x y z). | `0 1.5 0` | `boardPosition=0 1 -2` |
-| `boardRotation` | Rotation of the game board (x y z). | `0 0 0` | `boardRotation=0 45 0` |
-| `boardScale` | Scale of the game board (x y z). | `1 1 1` | `boardScale=0.5 0.5 0.5` |
-| `scoreboardPosition` | Position of the scoreboard, relative to world origin. | `0 1.3 0` | `scoreboardPosition=0 2.5 -2` |
-| `scoreboardRotation` | Rotation of the scoreboard. | `0 0 0` | `scoreboardRotation=0 180 0` |
-| `scoreboardScale` | Scale of the scoreboard. | `1 1 1` | `scoreboardScale=1.2 1.2 1.2` |
-| `resetPosition` | Position of the Reset button, relative to world origin. | `0.3 -1.2 0` | `resetPosition=1 1 -2` |
-| `resetRotation` | Rotation of the Reset button. | `0 0 0` | `resetRotation=0 0 30` |
-| `resetScale` | Scale of the Reset button. | `1 1 1` | `resetScale=2 2 2` |
-| `passPosition` | Position of the Pass button, relative to world origin. | `-0.3 -1.2 0` | `passPosition=-1 1 -2` |
-| `passRotation` | Rotation of the Pass button. | `0 0 0` | `passRotation=0 0 -30` |
-| `passScale` | Scale of the Pass button. | `1 1 1` | `passScale=2 2 2` |
+| `instance` | Unique ID for this game instance. Use this to have multiple separate games in one space. | `URL path` | `instance="table1"` |
+| `boardSize` / `board-size` | Grid size (e.g., 19, 13, 9). | `19` | `boardSize="9"` |
+| `hideUI` / `hide-ui` | Makes the UI (buttons, scoreboard) invisible but still functional. | `false` | `hideUI="true"` |
+| `hideBoard` / `hide-board` | Hides the board geometry. | `false` | `hideBoard="true"` |
+| `useCustomModels` / `use-custom-models` | Use GLB models for pieces. | `false` | `useCustomModels="true"` |
+| `lighting` | Shader type: 'lit' or 'unlit'. | `unlit` | `lighting="lit"` |
+| `addLights` / `add-lights` | Add directional light for lit mode. | `true` | `addLights="false"` |
+| `useAOBaking` / `use-ao-baking` | Bake Ambient Occlusion on board geometry. | `false` | `useAOBaking="true"` |
+| `boardPosition` / `position` / `board-position` | Position of the game board (x y z). | `0 1.5 0` | `boardPosition="0 1 -2"` |
+| `boardRotation` / `rotation` / `board-rotation` | Rotation of the game board (x y z). | `0 0 0` | `boardRotation="0 45 0"` |
+| `boardScale` / `scale` / `board-scale` | Scale of the game board (x y z). | `1 1 1` | `boardScale="0.5 0.5 0.5"` |
+| `scoreboardPosition` / `scoreboard-position` | Position of the scoreboard, relative to world origin. | `0 1.3 0` | `scoreboardPosition="0 2.5 -2"` |
+| `scoreboardRotation` / `scoreboard-rotation` | Rotation of the scoreboard. | `0 0 0` | `scoreboardRotation="0 180 0"` |
+| `scoreboardScale` / `scoreboard-scale` | Scale of the scoreboard. | `1 1 1` | `scoreboardScale="1.2 1.2 1.2"` |
+| `resetPosition` / `reset-position` | Position of the Reset button, relative to world origin. | `0.3 -1.2 0` | `resetPosition="1 1 -2"` |
+| `resetRotation` / `reset-rotation` | Rotation of the Reset button. | `0 0 0` | `resetRotation="0 0 30"` |
+| `resetScale` / `reset-scale` | Scale of the Reset button. | `1 1 1` | `resetScale="2 2 2"` |
+| `passPosition` / `pass-position` | Position of the Pass button, relative to world origin. | `-0.3 -1.2 0` | `passPosition="-1 1 -2"` |
+| `passRotation` / `pass-rotation` | Rotation of the Pass button. | `0 0 0` | `passRotation="0 0 -30"` |
+| `passScale` / `pass-scale` | Scale of the Pass button. | `1 1 1` | `passScale="2 2 2"` |
 
-**Example:**
+**Examples:**
 
+**HTML Script Attributes (Recommended):**
 ```html
-<script src="https://banter-go.firer.at/Go.js?boardPosition=0 1 2&boardSize=13&instance=game1"></script>
+<script src="https://banter-go.firer.at/Go.js" boardPosition="0 1 2" boardSize="13" instance="game1"></script>
+```
+
+**Legacy URL Query Parameters:**
+```html
+<script src="https://banter-go.firer.at/Go.js?boardPosition=0+1+2&boardSize=13&instance=game1"></script>
 ```
 
 ## How to Play
