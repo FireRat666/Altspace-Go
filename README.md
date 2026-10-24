@@ -63,6 +63,41 @@ You can configure the board's appearance and behavior using **HTML script attrib
 <script src="https://banter-go.firer.at/Go.js?boardPosition=0+1+2&boardSize=13&instance=game1"></script>
 ```
 
+## SideQuest / Altspace Creator SDK (Snippet)
+
+In a SideQuest/Altspace Creator SDK world, add an empty GameObject at the origin, click **Add Component > BS > Snippet** and type `go`. Or paste it into `Assets/WebRoot/index.html` between the snippet section comments:
+
+```html
+<!-- snippet section -->
+<bs-snippet name="go" title="Go"
+  description="Synced multiplayer upright Go (Weiqi/Baduk) board with pass, reset and a scoreboard."
+  script="https://go.firer.at/snippet.js"
+  room=""
+  position="0 1.5 2"
+  rotation="0 0 0"
+  scale="1"
+  board-size="19"
+  lighting="unlit"
+  add-lights="true"
+  hide-ui="false"
+  hide-board="false"
+  use-custom-models="false"
+  use-ao-baking="false"
+  reset-position="0.3 -1.2 0"
+  pass-position="-0.3 -1.2 0"
+  scoreboard-position="0 1.3 0">
+  <bs-gizmo type="position" attribute="position"/>
+  <bs-gizmo type="plane" attribute="position" size="1.52 1.52"/>
+</bs-snippet>
+<!-- end snippet section -->
+```
+
+- Settings are the same as the script attributes above. `position` and `rotation` are Unity world values, and `scale` can be a single number.
+- Each placement is its own game. Its sync id is `room`, or the placement's own id when `room` is empty. Give placements the same `room` to share one game.
+- An empty setting uses the game's default.
+- The Scene-view gizmo shows the board at its default size; it does not follow `scale`.
+- Unity reads the snippet section as XML: quote every attribute, close every element, and write `&` as `&amp;`.
+
 ## How to Play
 
 1. **Black** moves first.
