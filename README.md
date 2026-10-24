@@ -1,71 +1,21 @@
-# Banter Go (Weiqi/Baduk)
+# Go
 
-A fully synced, multiplayer Go game designed for [Banter](https://bantervr.com).
+A synced multiplayer upright Go (Weiqi/Baduk) board. Made for **SideQuest / AltspaceVR** worlds, and it also works in **Banter**.
+
+There is no server: players stay in sync through the space's shared state, and the game is plain static files served from <https://go.firer.at>.
+
+To try it, open <https://go.firer.at> in Altspace or Banter.
 
 ## Features
 
-* **Multiplayer Sync:** Game state is synchronized across all users in the space using Banter's public space properties.
-* **Full Ruleset:** Implements standard Go rules including:
-* **Liberties & Capturing:** Stones are removed when they have no liberties left.
-* **Suicide Prevention:** Moves that result in self-capture are forbidden (unless they capture opponent stones).
-* **Ko Rule:** Prevents immediate repetition of the board state.
-* **UI Elements:**
-* **Scoreboard:** Tracks captured stones for Black and White.
-* **Pass Button:** Allows players to pass their turn. The game logic detects when the game should end (though manual agreement is often used).
-* **Reset Button:** Clears the board to start a new game.
+- Captures, suicide prevention and the ko rule
+- Pass and reset buttons, and a capture scoreboard
+- 19×19, 13×13 or 9×9 boards
+- Several independent boards in one world
 
-## Usage
+## Add it to an Altspace world (snippet)
 
-To add the Go board to your Banter space, include the `Go.js` script in your `index.html`.
-
-### Basic Embed
-
-```html
-<script src="https://banter-go.firer.at/Go.js"></script>
-```
-
-### Configuration
-
-You can configure the board's appearance and behavior using **HTML script attributes** (recommended) or legacy **URL query parameters** (for backwards compatibility).
-
-| Parameter / Attribute | Description | Default | Example (Attribute) |
-| :--- | :--- | :--- | :--- |
-| `instance` | Unique ID for this game instance. Use this to have multiple separate games in one space. | `URL path` | `instance="table1"` |
-| `boardSize` / `board-size` | Grid size (e.g., 19, 13, 9). | `19` | `boardSize="9"` |
-| `hideUI` / `hide-ui` | Makes the UI (buttons, scoreboard) invisible but still functional. | `false` | `hideUI="true"` |
-| `hideBoard` / `hide-board` | Hides the board geometry. | `false` | `hideBoard="true"` |
-| `useCustomModels` / `use-custom-models` | Use GLB models for pieces. | `false` | `useCustomModels="true"` |
-| `lighting` | Shader type: 'lit' or 'unlit'. | `unlit` | `lighting="lit"` |
-| `addLights` / `add-lights` | Add directional light for lit mode. | `true` | `addLights="false"` |
-| `useAOBaking` / `use-ao-baking` | Bake Ambient Occlusion on board geometry. | `false` | `useAOBaking="true"` |
-| `boardPosition` / `position` / `board-position` | Position of the game board (x y z). | `0 1.5 0` | `boardPosition="0 1 -2"` |
-| `boardRotation` / `rotation` / `board-rotation` | Rotation of the game board (x y z). | `0 0 0` | `boardRotation="0 45 0"` |
-| `boardScale` / `scale` / `board-scale` | Scale of the game board (x y z). | `1 1 1` | `boardScale="0.5 0.5 0.5"` |
-| `scoreboardPosition` / `scoreboard-position` | Position of the scoreboard, relative to world origin. | `0 1.3 0` | `scoreboardPosition="0 2.5 -2"` |
-| `scoreboardRotation` / `scoreboard-rotation` | Rotation of the scoreboard. | `0 0 0` | `scoreboardRotation="0 180 0"` |
-| `scoreboardScale` / `scoreboard-scale` | Scale of the scoreboard. | `1 1 1` | `scoreboardScale="1.2 1.2 1.2"` |
-| `resetPosition` / `reset-position` | Position of the Reset button, relative to world origin. | `0.3 -1.2 0` | `resetPosition="1 1 -2"` |
-| `resetRotation` / `reset-rotation` | Rotation of the Reset button. | `0 0 0` | `resetRotation="0 0 30"` |
-| `resetScale` / `reset-scale` | Scale of the Reset button. | `1 1 1` | `resetScale="2 2 2"` |
-| `passPosition` / `pass-position` | Position of the Pass button, relative to world origin. | `-0.3 -1.2 0` | `passPosition="-1 1 -2"` |
-| `passRotation` / `pass-rotation` | Rotation of the Pass button. | `0 0 0` | `passRotation="0 0 -30"` |
-| `passScale` / `pass-scale` | Scale of the Pass button. | `1 1 1` | `passScale="2 2 2"` |
-
-**Examples:**
-
-**HTML Script Attributes (Recommended):**
-```html
-<script src="https://banter-go.firer.at/Go.js" boardPosition="0 1 2" boardSize="13" instance="game1"></script>
-```
-
-**Legacy URL Query Parameters:**
-```html
-<script src="https://banter-go.firer.at/Go.js?boardPosition=0+1+2&boardSize=13&instance=game1"></script>
-```
-
-## SideQuest / Altspace Creator SDK (Snippet)
-
-In a SideQuest/Altspace Creator SDK world, add an empty GameObject at the origin, click **Add Component > BS > Snippet** and type `go`. Or paste it into `Assets/WebRoot/index.html` between the snippet section comments:
+In a Creator SDK world, add an empty GameObject at the origin, click **Add Component > BS > Snippet** and type `go`. Or paste this into `Assets/WebRoot/index.html`, between the snippet section comments:
 
 ```html
 <!-- snippet section -->
@@ -92,16 +42,70 @@ In a SideQuest/Altspace Creator SDK world, add an empty GameObject at the origin
 <!-- end snippet section -->
 ```
 
-- Settings are the same as the script attributes above. `position` and `rotation` are Unity world values, and `scale` can be a single number.
 - Each placement is its own game. Its sync id is `room`, or the placement's own id when `room` is empty. Give placements the same `room` to share one game.
-- An empty setting uses the game's default.
+- `position` and `rotation` are Unity world values, and `scale` can be a single number. The other settings are listed under [Settings](#settings). An empty setting uses the default.
 - The Scene-view gizmo shows the board at its default size; it does not follow `scale`.
 - Unity reads the snippet section as XML: quote every attribute, close every element, and write `&` as `&amp;`.
 
-## How to Play
+## Add it with a script tag
 
-1. **Black** moves first.
-2. Click an intersection on the grid to place a stone.
-3. **Capturing:** Surround an opponent's stone or group of stones completely to capture them.
-4. **Passing:** If you cannot make a beneficial move, click the **Pass** button.
-5. **Ko:** You cannot make a move that repeats the exact board position of the previous turn.
+This works in an Altspace world's `Assets/WebRoot/index.html` (outside the snippet section) and in a Banter space's HTML:
+
+```html
+<script src="https://go.firer.at/Go.js" position="0 1.5 2" board-size="13"></script>
+```
+
+For more than one board in a space, give each one its own `instance`:
+
+```html
+<script src="https://go.firer.at/Go.js" instance="board1" position="-2 1.1 -2"></script>
+<script src="https://go.firer.at/Go.js" instance="board2" position="2 1.1 -2"></script>
+```
+
+Settings can also go in the URL, as in older setups: `https://go.firer.at/Go.js?boardPosition=0+1.1+-2&boardScale=0.8`.
+
+## Settings
+
+| Setting | Also accepted | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `instance` |  | page URL | Sync id. Boards with the same id share one game. In a snippet, use `room` instead. |
+| `boardPosition` | `position`, `board-position` | `0 1.5 0` | Board position (x y z). |
+| `boardRotation` | `rotation`, `board-rotation` | `0 0 0` | Board rotation in degrees (x y z). |
+| `boardScale` | `scale`, `board-scale` | `1` | Board scale: one number, or x y z. |
+| `boardSize` | `board-size` | `19` | Grid size, e.g. 19, 13 or 9. |
+| `resetPosition` | `reset-position` | `0.3 -1.2 0` | Reset button position, relative to the board. |
+| `resetRotation` | `reset-rotation` | `0 0 0` | Reset button rotation, relative to the board. |
+| `resetScale` | `reset-scale` | `1` | Reset button scale. |
+| `hideUI` | `hide-ui` | `false` | `true` hides the buttons. |
+| `hideBoard` | `hide-board` | `false` | `true` hides the board, e.g. to use your own. |
+| `useCustomModels` | `use-custom-models` | `false` | `true` uses the GLB models in `Models/` for the pieces instead of built-in shapes. |
+| `lighting` |  | `unlit` | `lit` uses materials that react to scene lights. |
+| `addLights` | `add-lights` | `true` | With `lighting="lit"`, adds a directional light. Set `false` if the world has its own. |
+| `useAOBaking` | `use-ao-baking` | `false` | Bakes ambient occlusion onto the board. |
+| `passPosition` | `pass-position` | `-0.3 -1.2 0` | Pass button position, relative to the board. |
+| `passRotation` | `pass-rotation` | `0 0 0` | Pass button rotation. |
+| `passScale` | `pass-scale` | `1` | Pass button scale. |
+| `scoreboardPosition` | `scoreboard-position` | `0 1.3 0` | Scoreboard position, relative to the board. |
+| `scoreboardRotation` | `scoreboard-rotation` | `0 0 0` | Scoreboard rotation. |
+| `scoreboardScale` | `scoreboard-scale` | `1` | Scoreboard scale. |
+
+Settings can be written as `boardPosition` or `board-position`; the snippet uses the hyphenated form.
+
+## How to play
+
+1. Black moves first.
+2. Click an intersection to place a stone.
+3. Surround stones completely to capture them.
+4. Click Pass if you don't want to move. Two passes in a row end the game.
+5. Ko: you can't repeat the board position from the previous turn.
+
+## Files
+
+- `Go.js`: the game.
+- `Models/`: stone models for `use-custom-models`.
+- `snippet.js`, `snippet.html`: the Creator SDK snippet and its definition.
+- `index.html`: a test page with a floor and the game.
+
+## License
+
+GPL-3.0. See [LICENSE](LICENSE).
