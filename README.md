@@ -27,13 +27,16 @@ In a Creator SDK world, add an empty GameObject at the origin, click **Add Compo
   rotation="0 0 0"
   scale="1"
   board-size="19"
-  lighting="unlit"
-  add-lights="true"
+  lit="true"
+  add-lights="false"
+  turn-cooldown="5"
   hide-ui="false"
   hide-board="false"
-  use-custom-models="false"
+  use-custom-models="true"
   use-ao-baking="false"
   reset-position="0.3 -1.2 0"
+  reset-rotation="0 0 0"
+  reset-scale="1"
   pass-position="-0.3 -1.2 0"
   scoreboard-position="0 1.3 0">
   <bs-gizmo type="position" attribute="position"/>
@@ -76,11 +79,13 @@ Settings can also go in the URL, as in older setups: `https://go.firer.at/Go.js?
 | `resetPosition` | `reset-position` | `0.3 -1.2 0` | Reset button position, relative to the board. |
 | `resetRotation` | `reset-rotation` | `0 0 0` | Reset button rotation, relative to the board. |
 | `resetScale` | `reset-scale` | `1` | Reset button scale. |
-| `hideUI` | `hide-ui` | `false` | `true` hides the buttons. |
+| `hideUI` | `hide-ui` | `false` | `true` makes the buttons and scoreboard invisible. The buttons still work and their labels stay visible. |
+| `turnCooldown` | `turn-cooldown` | `5` | Seconds after a move before the same person can move for the other side, so a double click or an eager player can't take the opponent's turn. Playing both sides alone still works after the wait. `0` turns it off. |
 | `hideBoard` | `hide-board` | `false` | `true` hides the board, e.g. to use your own. |
-| `useCustomModels` | `use-custom-models` | `false` | `true` uses the GLB models in `Models/` for the pieces instead of built-in shapes. |
-| `lighting` |  | `unlit` | `lit` uses materials that react to scene lights. |
-| `addLights` | `add-lights` | `true` | With `lighting="lit"`, adds a directional light. Set `false` if the world has its own. |
+| `useCustomModels` | `use-custom-models` | `true` | Uses the GLB models in `Models/` for the pieces. `false` uses built-in shapes instead. |
+| `lit` |  | `true` | Uses materials that react to scene lights. `false` uses unlit materials that ignore lighting. |
+| `lighting` |  | `lit` | Older form of `lit`: `lit` or `unlit`. `lit` wins if both are set. |
+| `addLights` | `add-lights` | `false` | With `lit="true"`, `true` adds a directional light, for worlds that have no lights of their own. |
 | `useAOBaking` | `use-ao-baking` | `false` | Bakes ambient occlusion onto the board. |
 | `passPosition` | `pass-position` | `-0.3 -1.2 0` | Pass button position, relative to the board. |
 | `passRotation` | `pass-rotation` | `0 0 0` | Pass button rotation. |

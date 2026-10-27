@@ -20,11 +20,12 @@
         resetScale: [1, 1, 1],
         instance: window.location.href.split('?')[0],
         hideUI: false,
+        turnCooldown: 5, // Seconds before the same person can move for the other side; 0 = off
         boardSize: 19, // Standard Go is 19x19
         hideBoard: false,
-        useCustomModels: false,
-        lighting: 'unlit',
-        addLights: true,
+        useCustomModels: true,
+        lighting: 'lit',
+        addLights: false,
         useAOBaking: false
     };
 
@@ -104,6 +105,7 @@
                 boardRotation: ['rotation', 'board-rotation'],
                 boardScale: ['scale', 'board-scale'],
                 hideUI: ['hide-ui'],
+                turnCooldown: ['turn-cooldown'],
                 hideBoard: ['hide-board'],
                 useCustomModels: ['use-custom-models'],
                 addLights: ['add-lights'],
@@ -140,11 +142,16 @@
         };
 
         config.hideUI = getParam('hideUI', String(config.hideUI)) === 'true';
+        config.turnCooldown = parseFloat(getParam('turnCooldown', String(config.turnCooldown)));
+        if (isNaN(config.turnCooldown)) config.turnCooldown = 5;
         config.hideBoard = getParam('hideBoard', String(config.hideBoard)) === 'true';
         config.instance = getParam('instance', config.instance);
         config.boardSize = parseInt(getParam('boardSize', String(config.boardSize)), 10) || 19;
         config.useCustomModels = getParam('useCustomModels', String(config.useCustomModels)) === 'true';
         config.lighting = getParam('lighting', config.lighting);
+        // 'lit' is a true/false switch (a checkbox in the snippet editor); it overrides 'lighting'.
+        const litParam = getParam('lit', null);
+        if (litParam !== null) config.lighting = litParam === 'true' ? 'lit' : 'unlit';
         config.addLights = getParam('addLights', String(config.addLights)) !== 'false';
         config.useAOBaking = getParam('useAOBaking', String(config.useAOBaking)) === 'true';
 
@@ -570,6 +577,7 @@
             BS.VerticalAlignment.Center,
             0.6, false, false, new BS.Vector2(5.0, 1.2)
         ));
+        turnGuard.texts.push(state.scoreboard);
     }
 
     function getGeoArgs(type, dims) {
@@ -598,11 +606,12 @@
         await obj.AddComponent(new BS.BanterGeometry(...fullArgs));
         const color = hexToVector4(colorHex, opacity);
         
+        // See-through objects need the transparent shader, even when lit
         let shader = "Unlit/Diffuse";
-        if (config.lighting === 'lit') {
-            shader = "Standard";
-        } else if (opacity < 1.0) {
+        if (opacity < 1.0) {
             shader = "Unlit/DiffuseTransparent";
+        } else if (config.lighting === 'lit') {
+            shader = "Standard";
         }
 
         // Use cacheBust to create unique material instance for objects that need dynamic colors
@@ -662,7 +671,8 @@
         const nextState = state.game.simulatePlay(row, col);
         if (nextState) {
             state.isSyncing = true;
-            syncState(nextState);
+            if (turnOnCooldown(state.game.currentPlayer)) { state.isSyncing = false; return; }
+            syncState(stampMove(nextState, state.game.currentPlayer));
         }
     }
 
@@ -671,8 +681,66 @@
         const nextState = state.game.simulatePlay(-1, -1);
         if (nextState) {
             state.isSyncing = true;
-            syncState(nextState);
+            if (turnOnCooldown(state.game.currentPlayer)) { state.isSyncing = false; return; }
+            syncState(stampMove(nextState, state.game.currentPlayer));
         }
+    }
+
+    // --- Turn cooldown ---
+    // Stops one person from taking both sides' turns by accident (a double click, or moving again
+    // before the other player has had a chance). After you move, if it is now the other side's
+    // turn, you must wait `turnCooldown` seconds before you can move for them. Someone playing on
+    // their own can still play both sides; they just wait. Extra turns for the same side are not
+    // affected. The time is only ever compared on the mover's own clock.
+    const turnGuard = { lastMove: null, notice: '', noticeTimer: null, texts: [] };
+
+    function localUid() {
+        const user = BS.BanterScene.GetInstance().localUser;
+        return user && user.uid !== undefined ? String(user.uid) : null;
+    }
+
+    // True (and shows a notice) if the local user has to wait before moving for `side`.
+    function turnOnCooldown(side) {
+        const m = turnGuard.lastMove;
+        const uid = localUid();
+        if (!m || !uid || !(config.turnCooldown > 0) || m.uid !== uid || m.side === side) return false;
+        const left = config.turnCooldown * 1000 - (Date.now() - m.at);
+        if (left <= 0) return false;
+        showTurnNotice(`Other player's turn (${Math.ceil(left / 1000)}s)`);
+        return true;
+    }
+
+    // Marks outgoing state as a move by the local user for `side`.
+    function stampMove(data, side) {
+        turnGuard.lastMove = { uid: localUid(), side, at: Date.now() };
+        data.lastMove = turnGuard.lastMove;
+        return data;
+    }
+
+    // Call with every state loaded from the space. A reset has no lastMove, which clears it.
+    function loadLastMove(data) {
+        turnGuard.lastMove = (data && data.lastMove) || null;
+    }
+
+    function showTurnNotice(text) {
+        turnGuard.notice = text;
+        clearTimeout(turnGuard.noticeTimer);
+        turnGuard.noticeTimer = setTimeout(() => {
+            turnGuard.notice = '';
+            updateTurnBoard();
+        }, 2500);
+        updateTurnBoard();
+    }
+
+    function updateTurnBoard() {
+        const text = turnGuard.notice || turnStatusText();
+        turnGuard.texts.forEach(t => { t.text = text; });
+    }
+
+    function turnStatusText() {
+        const g = state.game;
+        const turn = g.gameOver ? "Game over" : (g.currentPlayer === 1 ? "Black's Turn" : "White's Turn");
+        return `${turn}\nCaptures\nBlack: ${g.captures[1]}   White: ${g.captures[2]}`;
     }
 
     function syncState(newState) {
@@ -770,10 +838,7 @@
             console.log("Game Over. Captures:", state.game.captures);
         }
 
-        if (state.scoreboard) {
-            const turn = state.game.currentPlayer === 1 ? "Black's Turn" : "White's Turn";
-            state.scoreboard.text = `${turn}\nCaptures\nBlack: ${state.game.captures[1]}   White: ${state.game.captures[2]}`;
-        }
+        updateTurnBoard();
     }
 
     async function checkForExistingState() {
@@ -788,6 +853,7 @@
             try {
                 const data = JSON.parse(val);
                 state.game.loadState(data);
+                loadLastMove(data);
                 updateVisuals();
             } catch (e) { console.error("Failed to parse Go state", e); }
         }
@@ -805,6 +871,7 @@
                     try {
                         const data = JSON.parse(val);
                         state.game.loadState(data);
+                        loadLastMove(data);
                         updateVisuals();
                         state.isSyncing = false;
                     } catch (e) { console.error(e); }
