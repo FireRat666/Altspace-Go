@@ -34,11 +34,11 @@ In a Creator SDK world, add an empty GameObject at the origin, click **Add Compo
   hide-board="false"
   use-custom-models="true"
   use-ao-baking="false"
-  reset-position="0.3 -1.2 0"
+  reset-position="0 0 0"
   reset-rotation="0 0 0"
   reset-scale="1"
-  pass-position="-0.3 -1.2 0"
-  scoreboard-position="0 1.3 0">
+  pass-position="0 0 0"
+  scoreboard-position="0 0 0">
   <bs-gizmo type="position" attribute="position"/>
   <bs-gizmo type="plane" attribute="position" size="1.52 1.52"/>
 </bs-snippet>
@@ -76,7 +76,7 @@ Settings can also go in the URL, as in older setups: `https://go.firer.at/Go.js?
 | `boardRotation` | `rotation`, `board-rotation` | `0 0 0` | Board rotation in degrees (x y z). |
 | `boardScale` | `scale`, `board-scale` | `1` | Board scale: one number, or x y z. |
 | `boardSize` | `board-size` | `19` | Grid size, e.g. 19, 13 or 9. |
-| `resetPosition` | `reset-position` | `0.3 -1.2 0` | Reset button position, relative to the board. |
+| `resetPosition` | `reset-position` | `0 0 0` | Reset button position, relative to the board. |
 | `resetRotation` | `reset-rotation` | `0 0 0` | Reset button rotation, relative to the board. |
 | `resetScale` | `reset-scale` | `1` | Reset button scale. |
 | `hideUI` | `hide-ui` | `false` | `true` makes the buttons and scoreboard invisible. The buttons still work and their labels stay visible. |
@@ -87,14 +87,16 @@ Settings can also go in the URL, as in older setups: `https://go.firer.at/Go.js?
 | `lighting` |  | `lit` | Older form of `lit`: `lit` or `unlit`. `lit` wins if both are set. |
 | `addLights` | `add-lights` | `false` | With `lit="true"`, `true` adds a directional light, for worlds that have no lights of their own. |
 | `useAOBaking` | `use-ao-baking` | `false` | Bakes ambient occlusion onto the board. |
-| `passPosition` | `pass-position` | `-0.3 -1.2 0` | Pass button position, relative to the board. |
+| `passPosition` | `pass-position` | `0 0 0` | Pass button position, relative to the board. |
 | `passRotation` | `pass-rotation` | `0 0 0` | Pass button rotation. |
 | `passScale` | `pass-scale` | `1` | Pass button scale. |
-| `scoreboardPosition` | `scoreboard-position` | `0 1.3 0` | Scoreboard position, relative to the board. |
+| `scoreboardPosition` | `scoreboard-position` | `0 0 0` | Scoreboard position, relative to the board. |
 | `scoreboardRotation` | `scoreboard-rotation` | `0 0 0` | Scoreboard rotation. |
 | `scoreboardScale` | `scoreboard-scale` | `1` | Scoreboard scale. |
 
 Settings can be written as `boardPosition` or `board-position`; the snippet uses the hyphenated form.
+
+A position of `0 0 0` means automatic: the reset button, pass button and scoreboard sit in their default spots next to the board, which follow `board-size`. Any other value places them relative to the board.
 
 ## How to play
 
