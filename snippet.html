@@ -1,5 +1,5 @@
 <bs-snippet name="go" title="Go"
-  description="Synced multiplayer upright Go (Weiqi/Baduk) board with pass, reset and a scoreboard."
+  description="Synced multiplayer upright Go (Weiqi/Baduk) board with pass and seat locking."
   script="https://go.firer.at/snippet.js"
   room=""
   position="0 1.5 2"
@@ -9,6 +9,8 @@
   lit="true"
   add-lights="false"
   turn-cooldown="5"
+  lock-timeout="90"
+  cull-distance="20"
   sound-volume="0.4"
   sound-near="2.5"
   sound-far="10"
@@ -16,13 +18,6 @@
   hide-board="false"
   use-custom-models="true"
   use-ao-baking="false"
-  reset-position="0 0 0"
-  reset-rotation="0 0 0"
-  reset-scale="1"
-  mute-position="0 0 0"
-  mute-rotation="0 0 0"
-  mute-scale="1"
-  pass-position="0 0 0"
   scoreboard-position="0 0 0">
   <bs-gizmo type="position" attribute="position"/>
   <bs-gizmo type="plane" attribute="position" size="1.52 1.52"/>
